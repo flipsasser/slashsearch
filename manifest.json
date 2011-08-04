@@ -1,0 +1,8 @@
+{
+  "name": "SlashSearch",
+  "version": "1.0",
+  "description": "Add search shortcuts a la Gmail",
+  "content_scripts": [
+    {"matches": ["<all_urls>"], "js": ["slashsearch.js"]}
+  ]
+}
