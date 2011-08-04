@@ -1,8 +1,17 @@
 {
   "name": "SlashSearch",
-  "version": "1.0",
-  "description": "Add search shortcuts a la Gmail",
   "content_scripts": [
     {"matches": ["<all_urls>"], "js": ["slashsearch.js"]}
-  ]
+  ],
+  "description": "Press the forward slash key to automatically focus on the search box for whatever website you're on!",
+  "icon": "icon-128.png",
+  "icons": {
+    "16": "icon-16.png",
+    "32": "icon-32.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "permissions": [],
+  // "update_url": "http://clients2.google.com/service/update2/crx",
+  "version": "1.0.2"  
 }
