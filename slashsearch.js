@@ -22,7 +22,7 @@ var SlashSearch = {
       if (focused) {
         break;
       }
-      var inputs = document.querySelectorAll(selector);
+      var inputs = document.querySelectorAll(selectors[i]);
       if (inputs.length > 0) {
         for (var x = 0; x < inputs.length; x++) {
           var input = inputs[x];
