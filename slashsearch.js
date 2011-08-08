@@ -6,6 +6,8 @@
     }
     if (object.metaKeys && object.metaKeys != '') {
       metaKeys = object.metaKeys.split(';');      
+    } else {
+      metaKeys = [];
     }
   }
 

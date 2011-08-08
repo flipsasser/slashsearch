@@ -89,8 +89,8 @@ $(document).ready(function() {
           chrome.tabs.sendRequest(this.id, {method: 'setKeys', "hotKey": newHotKey, "metaKeys": newMetaKeys.join(';')});
         });
       });
+      window.close();
     });
-    // window.close();
   });
 
   $('#cancel').click(function(event) {
