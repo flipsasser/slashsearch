@@ -95,6 +95,17 @@ label {
   width:56px;
 }
 
+.quiet {
+  color:#666;
+  font-size:9pt;
+  margin:1em 0;
+}
+
+#key-text {
+  color:#000;
+  font-weight:bold;
+}
+
 footer {
   padding:0 1em 1em 1em;
 }

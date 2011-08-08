@@ -13,6 +13,6 @@
     "128": "icon-128.png"
   },
   "options_page": "options.html",
-  "permissions": [],
+  "permissions": ["tabs"],
   "version": "1.0.4"
 }

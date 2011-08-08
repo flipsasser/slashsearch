@@ -1,8 +1,8 @@
-var keyCodes, metaKeyCodes;
+var keyCodes, ignoreKeyCodes, metaKeyCodes;
 
 $(document).ready(function() {
   var editing, hotKey, newHotKey, metaKeys = [], newMetaKeys = [], keys = $('#keys');
-  var input = $('#hotkey');
+  var input = $('#hotkey'), keyText = $('#key-text'), quiet = keyText.parent();
 
   var addKey = function(contents) {
     var key = $('<div class="key"></div>');
@@ -13,6 +13,7 @@ $(document).ready(function() {
       inputValue += '     ';
     }
     input.val(inputValue);
+    keyText.html(keys.text());
   };
 
   var addMetaKey = function(newMetaKey) {
@@ -63,7 +64,7 @@ $(document).ready(function() {
         addMetaKey('meta');
       } else if (event.shiftKey && keyCode == 16) {
         addMetaKey('shift');
-      } else {
+      } else if (!ignoreKeyCodes[keyCode]) {
         setHotKey(keyCode);
         this.blur();
       }
@@ -82,7 +83,14 @@ $(document).ready(function() {
     event.preventDefault();
     localStorage['slashsearch.hotKey'] = newHotKey;
     localStorage['slashsearch.metaKeys'] = newMetaKeys.join(';');
-    window.close();
+    chrome.windows.getAll({populate: true}, function(windows) {
+      $.each(windows, function() {
+        $.each(this.tabs, function() {
+          chrome.tabs.sendRequest(this.id, {method: 'setKeys', "hotKey": newHotKey, "metaKeys": newMetaKeys.join(';')});
+        });
+      });
+    });
+    // window.close();
   });
 
   $('#cancel').click(function(event) {
@@ -107,34 +115,8 @@ $(document).ready(function() {
 });
 
 keyCodes = {
-	3: 'CANCEL',
-	6: 'HELP',
-	8: 'BACK_SPACE',
-	9: 'TAB',
-	12: 'CLEAR',
-	13: 'RETURN',
-	14: 'ENTER',
-	16: 'SHIFT',
-	17: 'CONTROL',
-	18: 'ALT',
-	19: 'PAUSE',
-	20: 'CAPS_LOCK',
-	27: 'ESCAPE',
-	32: 'SPACE',
-	33: 'PAGE_UP',
-	34: 'PAGE_DOWN',
-	35: 'END',
-	36: 'HOME',
-	37: 'LEFT',
-	38: 'UP',
-	39: 'RIGHT',
-	40: 'DOWN',
-	41: 'SELECT',
-	42: 'PRINT',
-	43: 'EXECUTE',
-	44: 'PRINTSCREEN',
-	45: 'INSERT',
-	46: 'DELETE',
+	13: '&#8617;',
+	14: '&#8617;',
 	48: '0',
 	49: '1',
 	50: '2',
@@ -145,18 +127,17 @@ keyCodes = {
 	55: '7',
 	56: '8',
 	57: '9',
-	59: 'SEMICOLON',
-	93: 'CONTEXT_MENU',
-	96: 'NUMPAD0',
-	97: 'NUMPAD1',
-	98: 'NUMPAD2',
-	99: 'NUMPAD3',
-	100: 'NUMPAD4',
-	101: 'NUMPAD5',
-	102: 'NUMPAD6',
-	103: 'NUMPAD7',
-	104: 'NUMPAD8',
-	105: 'NUMPAD9',
+	59: ';',
+	96: '0',
+	97: '1',
+	98: '2',
+	99: '3',
+	100: '4',
+	101: '5',
+	102: '6',
+	103: '7',
+	104: '8',
+	105: '9',
 	106: 'MULTIPLY',
 	107: 'ADD',
 	108: 'SEPARATOR',
@@ -187,22 +168,15 @@ keyCodes = {
 	133: 'F22',
 	134: 'F23',
 	135: 'F24',
-	144: 'NUM_LOCK',
-	145: 'SCROLL_LOCK',
+	186: ';',
+	187: '=',
 	188: ',',
+	189: '-',
 	190: '.',
 	191: '/',
 	192: '`',
 	219: '[',
-	221: ']',
-	224: 'META'
-};
-
-metaKeyCodes = {
-  'alt': '&#8997;',
-  'ctrl': '&#8963;',
-  'meta': '&#8984;',
-  'shift': '&#8679;'
+	221: ']'
 };
 
 var platformKeyCodes = {
@@ -218,6 +192,46 @@ var platformKeyCodes = {
     192: "'"
   }
 };
+
+ignoreKeyCodes = {
+  3: 'CANCEL',
+	6: 'HELP',
+	8: 'BACK_SPACE',
+	9: 'TAB',
+	12: 'CLEAR',
+	16: 'SHIFT',
+	17: 'CONTROL',
+	18: 'ALT',
+	19: 'PAUSE',
+	20: 'CAPS_LOCK',
+	27: 'ESCAPE',
+	32: 'SPACE',
+	33: 'PAGE_UP',
+	34: 'PAGE_DOWN',
+	35: 'END',
+	36: 'HOME',
+	37: 'LEFT',
+	38: 'UP',
+	39: 'RIGHT',
+	40: 'DOWN',
+	41: 'SELECT',
+	42: 'PRINT',
+	43: 'EXECUTE',
+	44: 'PRINTSCREEN',
+	45: 'INSERT',
+	46: 'DELETE',
+	144: 'NUM_LOCK',
+	145: 'SCROLL_LOCK',
+	224: 'META'
+}
+
+metaKeyCodes = {
+  'alt': '&#8997;',
+  'ctrl': '&#8963;',
+  'meta': '&#8984;',
+  'shift': '&#8679;'
+};
+
 
 if (navigator.appVersion.indexOf('Mac') !=-1 ) {
   $.extend(keyCodes, platformKeyCodes.mac);

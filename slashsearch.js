@@ -1,12 +1,22 @@
 (function() {
   var hotKey = 191, metaKeys = [];
-  chrome.extension.sendRequest({method: 'getKeys'}, function(response) {
-    if (response.hotKey) {
-      hotKey = parseInt(response.hotKey);
+  var setKeys = function(object) {
+    if (object.hotKey) {
+      hotKey = parseInt(object.hotKey);
     }
-    if (response.metaKeys && response.metaKeys != '') {
-      metaKeys = response.metaKeys.split(';');      
+    if (object.metaKeys && object.metaKeys != '') {
+      metaKeys = object.metaKeys.split(';');      
     }
+  }
+
+  chrome.extension.sendRequest({method: 'getKeys'}, setKeys);
+  chrome.extension.onRequest.addListener(function(request, requester, sendResponse) {
+    switch (request.method) {
+      case 'setKeys':
+        setKeys(request);
+      break;
+    }
+    sendResponse({});
   });
 
   var focusOnSelector = function(selector) {
@@ -31,18 +41,21 @@
     }
     return focused;
   };
+
   var blockKeyRepeat;
   document.addEventListener('keydown', function(event) {
-    var metaKeysMatch = true;
-    for (var i = 0; i < metaKeys.length; i++) {
-      metaKeysMatch = metaKeysMatch && event[metaKeys[i] + 'Key'];
-    }
     if (blockKeyRepeat) {
       event.preventDefault();      
-    } else if (event.keyCode == hotKey && metaKeysMatch && event.target.tagName.toLowerCase()  != 'input' && event.target.tagName.toLowerCase()  != 'textarea' && event.target.tagName.toLowerCase() != 'select') {
-      blockKeyRepeat = true;
-      if (focusOnSelector('input[type=search]') || focusOnSelector('input[name=q]') || focusOnSelector('input[type=qs]') || focusOnSelector('input[type=text]')) {
-        event.preventDefault();
+    } else {
+      var metaKeysMatch = true;
+      for (var i = 0; i < metaKeys.length; i++) {
+        metaKeysMatch = metaKeysMatch && event[metaKeys[i] + 'Key'];
+      }
+      if (event.keyCode == hotKey && metaKeysMatch && event.target.tagName.toLowerCase()  != 'input' && event.target.tagName.toLowerCase()  != 'textarea' && event.target.tagName.toLowerCase() != 'select') {
+        blockKeyRepeat = true;
+        if (focusOnSelector('input[type=search]') || focusOnSelector('input[name=q]') || focusOnSelector('input[type=qs]') || focusOnSelector('input[type=text]')) {
+          event.preventDefault();
+        }
       }
     }
   });
