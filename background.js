@@ -37,10 +37,12 @@ SlashSearch = {
   },
   updateDefaultSuggestion: function(match) {
     this.withCurrentTab(function(tab) {
-      var suggestion = 'Search ';
-      suggestion += '<url>' + this.link.host + '</url>';
+      var suggestion = 'Search <url>' + this.link.host + '</url> for ';
       if (match) {
-        suggestion += ' for <match>' + match + '</match>';
+        suggestion += '<match>' + match + '</match>';
+      } else {
+        suggestion += '&lt;enter query&gt;';
+        suggestion = '<dim>' + suggestion + '</dim>';
       }
       chrome.omnibox.setDefaultSuggestion({
         description: suggestion
