@@ -26,10 +26,11 @@
   appearance:none !important;
   background:transparent !important;
   border-width:0 !important;
+  box-sizing:border-box !important;
   color:#000 !important;
   display:block !important;
   font:bold 20pt Helvetica, 'droid sans', arial, sans-serif !important;
-  height:32px !important;
+  height:42px !important;
   left:42px !important;
   letter-spacing:normal !important;
   line-height:normal !important;
