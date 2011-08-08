@@ -2,7 +2,7 @@
   "name": "SlashSearch",
   "background_page": "background.html",
   "content_scripts": [
-    {"matches": ["<all_urls>"], "js": ["slashsearch.js"]}
+    {"matches": ["<all_urls>"], "css": ["slashsearch.css"], "js": ["slashsearch.js"]}
   ],
   "description": "Press the forward slash key to automatically focus on the search box for whatever website you're on!",
   "icon": "icon-128.png",
@@ -14,5 +14,5 @@
   },
   "options_page": "options.html",
   "permissions": ["tabs"],
-  "version": "1.0.5"
+  "version": "1.0.6"
 }

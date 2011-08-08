@@ -5,6 +5,13 @@
       case 'getKeys':
         sendResponse({hotKey: localStorage['slashsearch.hotKey'], metaKeys: localStorage['slashsearch.metaKeys']});
       break;
+      case 'performSearch':
+        sendResponse({});
+        chrome.windows.getCurrent(function(currentWindow) {
+          // console.log(currentWindow);
+          // chrome.tabs.update(tab.id, {url: request.term});
+        });
+      break;
       default:
         sendResponse({});
       break;
