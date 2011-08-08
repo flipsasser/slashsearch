@@ -1,0 +1,14 @@
+<html>
+  <script type="text/javascript">
+  chrome.extension.onRequest.addListener(function(request, requester, sendResponse) {
+    switch (request.method) {
+      case 'getKeys':
+        sendResponse({hotKey: localStorage['slashsearch.hotKey'], metaKeys: localStorage['slashsearch.metaKeys']});
+      break;
+      default:
+        sendResponse({});
+      break;
+    }
+  });
+  </script>
+</html>

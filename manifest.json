@@ -1,5 +1,6 @@
 {
   "name": "SlashSearch",
+  "background_page": "background.html",
   "content_scripts": [
     {"matches": ["<all_urls>"], "js": ["slashsearch.js"]}
   ],
@@ -11,6 +12,7 @@
     "48": "icon-48.png",
     "128": "icon-128.png"
   },
+  "options_page": "options.html",
   "permissions": [],
-  "version": "1.0.2"  
+  "version": "1.0.4"
 }
