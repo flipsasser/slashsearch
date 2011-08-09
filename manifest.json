@@ -17,5 +17,5 @@
   },
   "options_page": "options.html",
   "permissions": ["tabs"],
-  "version": "1.0.8"
+  "version": "1.1"
 }

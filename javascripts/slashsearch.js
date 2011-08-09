@@ -45,10 +45,10 @@ var SlashSearch = {
         event.preventDefault();      
       } else {
         var metaKeysMatch = true;
-        for (var i = 0; i < metaKeys.length; i++) {
+        for (var i = 0; i < SlashSearch.metaKeys.length; i++) {
           metaKeysMatch = metaKeysMatch && event[metaKeys[i] + 'Key'];
         }
-        if (event.keyCode == hotKey && metaKeysMatch && event.target.tagName.toLowerCase()  != 'input' && event.target.tagName.toLowerCase()  != 'textarea' && event.target.tagName.toLowerCase() != 'select') {
+        if (event.keyCode == SlashSearch.hotKey && metaKeysMatch && event.target.tagName.toLowerCase()  != 'input' && event.target.tagName.toLowerCase()  != 'textarea' && event.target.tagName.toLowerCase() != 'select') {
           event.preventDefault();
           blockKeyRepeat = true;
           if (!SlashSearch.focusOnSelector('input[type=search], input[name=q], input[type=qs], input[type=text]')) {
