@@ -47,7 +47,9 @@ $(document).ready(function() {
   input.focus(function(event) {
     clearKeys();
   }).blur(function(event){
-    
+    if (this.value == '') {
+      restoreKeys();
+    }
   }).keydown(function(event) {
     if (event.keyCode == 27) {
       restoreKeys();
@@ -138,8 +140,8 @@ keyCodes = {
 	103: '7',
 	104: '8',
 	105: '9',
-	106: 'MULTIPLY',
-	107: 'ADD',
+	106: '*',
+	107: '+',
 	108: 'SEPARATOR',
 	109: 'SUBTRACT',
 	110: 'DECIMAL',
