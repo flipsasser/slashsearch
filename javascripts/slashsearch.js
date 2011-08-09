@@ -45,10 +45,15 @@ var SlashSearch = {
         event.preventDefault();      
       } else {
         var metaKeysMatch = true;
-        for (var i = 0; i < SlashSearch.metaKeys.length; i++) {
-          metaKeysMatch = metaKeysMatch && event[metaKeys[i] + 'Key'];
+        var metaKeys = ['alt', 'ctrl', 'meta', 'shift'];
+        for (var i = 0; i < metaKeys.length; i++) {
+          if (SlashSearch.metaKeys.indexOf(metaKeys[i]) > -1) {
+            metaKeysMatch = metaKeysMatch && event[metaKeys[i] + 'Key'];
+          } else {
+            metaKeysMatch = metaKeysMatch && !event[metaKeys[i] + 'Key'];
+          }
         }
-        if (event.keyCode == SlashSearch.hotKey && metaKeysMatch && event.target.tagName.toLowerCase()  != 'input' && event.target.tagName.toLowerCase()  != 'textarea' && event.target.tagName.toLowerCase() != 'select') {
+        if (metaKeysMatch && event.keyCode == SlashSearch.hotKey && event.target.tagName.toLowerCase()  != 'input' && event.target.tagName.toLowerCase()  != 'textarea' && event.target.tagName.toLowerCase() != 'select') {
           event.preventDefault();
           blockKeyRepeat = true;
           if (!SlashSearch.focusOnSelector('input[type=search], input[name=q], input[type=qs], input[type=text]')) {
@@ -74,12 +79,12 @@ var SlashSearch = {
   },
   setKeys: function(object) {
     if (object.hotKey) {
-      this.hotKey = parseInt(object.hotKey);
+      SlashSearch.hotKey = parseInt(object.hotKey);
     }
     if (object.metaKeys && object.metaKeys != '') {
-      this.metaKeys = object.metaKeys.split(';');      
+      SlashSearch.metaKeys = object.metaKeys.split(';');      
     } else {
-      this.metaKeys = [];
+      SlashSearch.metaKeys = [];
     }
   },
   setupCover: function() {
