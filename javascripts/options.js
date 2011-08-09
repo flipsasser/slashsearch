@@ -10,7 +10,7 @@ $(document).ready(function() {
     keys.append(key);
     var inputValue = '';
     for (var i = 0; i < keys.find('.key').length; i++) {
-      inputValue += '     ';
+      inputValue += '   ';
     }
     input.val(inputValue);
     keyText.html(keys.text());
