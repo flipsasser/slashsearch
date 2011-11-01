@@ -10,8 +10,7 @@ var SlashSearch = {
       sendResponse({});
     });
   },
-  focusOnSelector: function(selector) {
-    var focused = false;
+  focusOnSelector: function(doc, selector) {
     // We split instead of using querySelectorAll's support for comma-separated items
     // because we favor certain conditions over others. For example, if a type=search
     // appears AFTER name=q in the DOM, it will be ignored unless we search FIRST for
@@ -19,59 +18,72 @@ var SlashSearch = {
     // down the line.
     var selectors = selector.split(',');
     for (var i = 0; i < selectors.length; i++) {
-      if (focused) {
-        break;
-      }
-      var inputs = document.querySelectorAll(selectors[i]);
-      if (inputs.length > 0) {
-        for (var x = 0; x < inputs.length; x++) {
-          var input = inputs[x];
-          // Visible elements...
-          if (input.offsetHeight != 0 && input.offsetWidth != 0) {
-            input.focus();
-            input.select();
-            focused = true;
-            break;
+      var inputs = doc.querySelectorAll(selectors[i]), bodyWidth = document.body.offsetWidth;
+      inputLoop: for (var x = 0; x < inputs.length; x++) {
+        var input = inputs[x];
+        // Visible elements...
+        if (input.offsetHeight != 0 && input.offsetWidth != 0 && input.style.display != 'none' && input.style.visibility != 'hidden') {
+          var parent = input;
+          var left = top = 0;
+          while (parent.offsetParent) {
+            left += parent.offsetLeft;
+            top += parent.offsetTop;
+            if (left < -(input.offsetWidth) || left > bodyWidth + parent.offsetWidth || top < -(input.offsetHeight)) {
+              continue inputLoop;
+            }
+            parent = parent.offsetParent;
           }
+          input.focus();
+          input.select();
+          return true;
         }
       }
     }
-    return focused;
+    return false;
   },
   listen: function() {
     var blockKeyRepeat;
-    document.addEventListener('keydown', function(event) {
-      if (blockKeyRepeat) {
-        event.preventDefault();      
-      } else {
-        var metaKeysMatch = true;
-        var metaKeys = ['alt', 'ctrl', 'meta', 'shift'];
-        for (var i = 0; i < metaKeys.length; i++) {
-          if (SlashSearch.metaKeys.indexOf(metaKeys[i]) > -1) {
-            metaKeysMatch = metaKeysMatch && event[metaKeys[i] + 'Key'];
-          } else {
-            metaKeysMatch = metaKeysMatch && !event[metaKeys[i] + 'Key'];
-          }
-        }
-        if (metaKeysMatch && event.keyCode == SlashSearch.hotKey && event.target.tagName.toLowerCase()  != 'input' && event.target.tagName.toLowerCase()  != 'textarea' && event.target.tagName.toLowerCase() != 'select') {
-          event.preventDefault();
-          blockKeyRepeat = true;
-          if (!SlashSearch.focusOnSelector('input[type=search], input[name=q], input[type=qs], input[type=text]')) {
-            var cover = document.getElementById('slashSearch');
-            if (!cover) {
-              cover = SlashSearch.setupCover();
+    var documents = [document];
+    var frames = document.querySelectorAll('frameset > frame')
+    for (var i = 0; i < frames.length; i++) {
+      documents.push(frames[i].contentDocument);
+    }
+    for (var d = 0; d < documents.length; d++) {
+      var doc = documents[d];
+      doc.addEventListener('keydown', function(event) {
+        if (blockKeyRepeat) {
+          event.preventDefault();      
+        } else {
+          var metaKeysMatch = true;
+          var metaKeys = ['alt', 'ctrl', 'meta', 'shift'];
+          for (var i = 0; i < metaKeys.length; i++) {
+            if (SlashSearch.metaKeys.indexOf(metaKeys[i]) > -1) {
+              metaKeysMatch = metaKeysMatch && event[metaKeys[i] + 'Key'];
+            } else {
+              metaKeysMatch = metaKeysMatch && !event[metaKeys[i] + 'Key'];
             }
-            var input = document.getElementById('slashSearchInput');
-            input.value = '';
-            cover.style.display = '';
-            input.focus();
+          }
+          var invalidTags = ['embed', 'input', 'select', 'textarea'];
+          if (metaKeysMatch && event.keyCode == SlashSearch.hotKey && invalidTags.indexOf(event.target.tagName.toLowerCase()) == -1) {
+            event.preventDefault();
+            blockKeyRepeat = true;
+            if (!SlashSearch.focusOnSelector(doc, 'input[type=search], input:not([type]), input[name=q], input[type=qs], input[type=text]')) {
+              var cover = document.getElementById('slashSearch');
+              if (!cover) {
+                cover = SlashSearch.setupCover();
+              }
+              var input = document.getElementById('slashSearchInput');
+              input.value = '';
+              cover.style.display = '';
+              input.focus();
+            }
           }
         }
-      }
-    });
-    document.addEventListener('keyup', function(event) {
-      blockKeyRepeat = false;
-    });
+      });
+      document.addEventListener('keyup', function(event) {
+        blockKeyRepeat = false;
+      });
+    }
   },
   performSearch: function(search) {
     var searchTerm = encodeURIComponent('site:' + search.origin + ' ' + search.term);
