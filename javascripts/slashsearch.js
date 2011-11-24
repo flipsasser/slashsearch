@@ -10,6 +10,7 @@ var SlashSearch = {
       sendResponse({});
     });
   },
+  documents: [],
   focusOnSelector: function(doc, selector) {
     // We split instead of using querySelectorAll's support for comma-separated items
     // because we favor certain conditions over others. For example, if a type=search
@@ -41,33 +42,31 @@ var SlashSearch = {
     }
     return false;
   },
-  listen: function() {
+  listen: function(targetDocument) {
+    this.documents.push(targetDocument);
     var blockKeyRepeat;
-    var documents = [document];
-    var frames = document.querySelectorAll('frameset > frame')
-    for (var i = 0; i < frames.length; i++) {
-      documents.push(frames[i].contentDocument);
-    }
-    for (var d = 0; d < documents.length; d++) {
-      var doc = documents[d];
-      doc.addEventListener('keydown', function(event) {
-        if (blockKeyRepeat) {
-          event.preventDefault();      
-        } else {
-          var metaKeysMatch = true;
-          var metaKeys = ['alt', 'ctrl', 'meta', 'shift'];
-          for (var i = 0; i < metaKeys.length; i++) {
-            if (SlashSearch.metaKeys.indexOf(metaKeys[i]) > -1) {
-              metaKeysMatch = metaKeysMatch && event[metaKeys[i] + 'Key'];
-            } else {
-              metaKeysMatch = metaKeysMatch && !event[metaKeys[i] + 'Key'];
-            }
+    targetDocument.addEventListener('keydown', function(event) {
+      if (blockKeyRepeat) {
+        event.preventDefault();      
+      } else {
+        var metaKeysMatch = true;
+        var metaKeys = ['alt', 'ctrl', 'meta', 'shift'];
+        for (var i = 0; i < metaKeys.length; i++) {
+          if (SlashSearch.metaKeys.indexOf(metaKeys[i]) > -1) {
+            metaKeysMatch = metaKeysMatch && event[metaKeys[i] + 'Key'];
+          } else {
+            metaKeysMatch = metaKeysMatch && !event[metaKeys[i] + 'Key'];
           }
-          var invalidTags = ['embed', 'input', 'select', 'textarea'];
-          if (metaKeysMatch && event.keyCode == SlashSearch.hotKey && invalidTags.indexOf(event.target.tagName.toLowerCase()) == -1) {
-            event.preventDefault();
-            blockKeyRepeat = true;
-            if (!SlashSearch.focusOnSelector(doc, 'input[type=search], input:not([type]), input[name=q], input[type=qs], input[type=text]')) {
+        }
+        var invalidTags = ['embed', 'input', 'object', 'textarea'];
+        if (metaKeysMatch && event.keyCode == SlashSearch.hotKey && invalidTags.indexOf(event.target.tagName.toLowerCase()) == -1) {
+          event.preventDefault();
+          blockKeyRepeat = true;
+          for (var d = 0; d < SlashSearch.documents.length; d++) {
+            var doc = SlashSearch.documents[d];
+            if (SlashSearch.focusOnSelector(doc, 'input[type=search], input:not([type]), input[name=q], input[type=qs], input[type=text]')) {
+              return;
+            } else {
               var cover = document.getElementById('slashSearch');
               if (!cover) {
                 cover = SlashSearch.setupCover();
@@ -79,11 +78,11 @@ var SlashSearch = {
             }
           }
         }
-      });
-      document.addEventListener('keyup', function(event) {
-        blockKeyRepeat = false;
-      });
-    }
+      }
+    });
+    targetDocument.addEventListener('keyup', function(event) {
+      blockKeyRepeat = false;
+    });
   },
   performSearch: function(search) {
     var searchTerm = encodeURIComponent('site:' + search.origin + ' ' + search.term);
@@ -128,5 +127,15 @@ var SlashSearch = {
   }
 };
 
-SlashSearch.listen();
+SlashSearch.listen(document);
 SlashSearch.configure();
+
+document.addEventListener('DOMContentLoaded', function() {
+  var frames = document.querySelectorAll('frameset > frame')
+  for (var i = 0; i < frames.length; i++) {
+    var frame = frames[i];
+    frame.addEventListener('load', function(event) {
+      SlashSearch.listen(this.contentDocument);
+    });
+  }
+});
