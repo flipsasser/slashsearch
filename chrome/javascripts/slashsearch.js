@@ -59,7 +59,7 @@ var SlashSearch = {
           }
         }
         var invalidTags = ['embed', 'input', 'object', 'textarea'];
-        if (metaKeysMatch && event.keyCode == SlashSearch.hotKey && invalidTags.indexOf(event.target.tagName.toLowerCase()) == -1) {
+        if (metaKeysMatch && event.keyCode == SlashSearch.hotKey && invalidTags.indexOf(event.target.tagName.toLowerCase()) == -1 && !event.target.hasAttribute('contenteditable')) {
           event.preventDefault();
           blockKeyRepeat = true;
           for (var d = 0; d < SlashSearch.documents.length; d++) {
