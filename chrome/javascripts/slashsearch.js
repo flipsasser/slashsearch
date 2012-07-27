@@ -64,7 +64,7 @@ var SlashSearch = {
           blockKeyRepeat = true;
           for (var d = 0; d < SlashSearch.documents.length; d++) {
             var doc = SlashSearch.documents[d];
-            if (SlashSearch.focusOnSelector(doc, 'input[type=search], input:not([type]), input[name=q], input[type=qs], input[type=text]')) {
+            if (SlashSearch.focusOnSelector(doc, 'input[id*=search], input[class*=search], input[id*=Search], input[class*=Search], input[id*=SEARCH], input[class*=SEARCH], input[type=search], input:not([type]), input[name=q], input[type=qs], input[type=text]')) {
               return;
             } else {
               var cover = document.getElementById('slashSearch');
