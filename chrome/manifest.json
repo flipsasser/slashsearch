@@ -2,7 +2,12 @@
   "name": "SlashSearch",
   "background_page": "background.html",
   "content_scripts": [
-    {"matches": ["<all_urls>"], "css": ["stylesheets/slashsearch.css"], "js": ["javascripts/slashsearch.js"], "run_at": "document_start"}
+    {
+      "matches": ["<all_urls>"],
+      "css": ["stylesheets/slashsearch.css"],
+      "js": ["javascripts/slashsearch.js"],
+      "run_at": "document_start"
+    }
   ],
   "description": "Press the forward slash key to automatically focus on the search box for whatever website you're on!",
   "icon": "images/icon-128.png",
@@ -12,6 +17,7 @@
     "48": "images/icon-48.png",
     "128": "images/icon-128.png"
   },
+  "manifest_version": 2,
   "offline_enabled": true,
   "omnibox": {
     "keyword": "\\"
